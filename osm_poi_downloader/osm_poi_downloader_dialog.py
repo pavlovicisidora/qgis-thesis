@@ -143,32 +143,51 @@ class OsmPoiDownloaderDialog(QtWidgets.QDialog, FORM_CLASS):
         self.pushButton_download.setEnabled(True)
         
     def export_layer(self):
-        """Export the current layer to GeoJSON."""
+        """Export the current layer to selected format."""
         if not self.current_layer:
             QMessageBox.warning(self, "No Layer", "No layer to export. Download POIs first.")
             return
         
+        export_format = self.comboBox_exportFormat.currentText()
+        
+        if export_format == "GeoJSON":
+            filter_str = "GeoJSON Files (*.geojson);;All Files (*)"
+            default_ext = ".geojson"
+        elif export_format == "CSV":
+            filter_str = "CSV Files (*.csv);;All Files (*)"
+            default_ext = ".csv"
+        else:
+            QMessageBox.warning(self, "Invalid Format", "Please select a valid export format.")
+            return
+        
+        # Open file dialog
         filepath, _ = QFileDialog.getSaveFileName(
             self,
-            "Save GeoJSON File",
+            f"Save {export_format} File",
             "",
-            "GeoJSON Files (*.geojson);;All Files (*)"
+            filter_str
         )
         
         if not filepath:
             return
         
-        self.label_status.setText("Status: Exporting to GeoJSON...")
+        if not filepath.lower().endswith(default_ext):
+            filepath += default_ext
+        
+        self.label_status.setText(f"Status: Exporting to {export_format}...")
         self.pushButton_export.setEnabled(False)
         
-        success, error_msg = LayerExporter.export_to_geojson(self.current_layer, filepath)
+        if export_format == "GeoJSON":
+            success, error_msg = LayerExporter.export_to_geojson(self.current_layer, filepath)
+        else: 
+            success, error_msg = LayerExporter.export_to_csv(self.current_layer, filepath)
         
         if success:
             feature_count = LayerExporter.get_feature_count(self.current_layer)
             QMessageBox.information(
                 self,
                 "Export Successful",
-                f"Exported {feature_count} features to:\n{filepath}"
+                f"Exported {feature_count} features to {export_format}:\n{filepath}"
             )
             self.label_status.setText(f"Status: Exported to {os.path.basename(filepath)}")
         else:
