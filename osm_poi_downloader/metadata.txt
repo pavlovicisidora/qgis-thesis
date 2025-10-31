@@ -1,0 +1,26 @@
+# This file contains metadata for your plugin.
+
+[general]
+name=OSM POI Downloader
+qgisMinimumVersion=3.0
+description=This plugin downloads POI data from OpenStreetMap using the Overpass API.
+version=0.1.0
+author=Isidora Pavlovic
+email=isidorapavlovic0@gmail.com
+
+about=This plugin allows users to download Points of Interest (POI) from OpenStreetMap by drawing a bounding box on the map and selecting POI categories. Data is retrieved using the Overpass API and displayed as a vector layer in QGIS.
+
+tracker=https://github.com/pavlovicisidora/qgis-thesis/issues
+repository=https://github.com/pavlovicisidora/qgis-thesis
+
+tags=python,openstreetmap,poi
+
+homepage=https://github.com/pavlovicisidora/qgis-thesis
+category=Vector
+icon=icon.png
+
+experimental=True
+deprecated=False
+
+server=False
+hasProcessingProvider=no
