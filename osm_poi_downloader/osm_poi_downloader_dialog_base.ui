@@ -1,33 +1,182 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>OsmPoiDownloaderDialogBase</class>
- <widget class="QDialog" name="OsmPoiDownloaderDialogBase" >
-  <property name="geometry" >
+ <widget class="QDialog" name="OsmPoiDownloaderDialogBase">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>400</width>
-    <height>300</height>
+    <height>350</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>OSM POI Downloader</string>
   </property>
-  <widget class="QDialogButtonBox" name="button_box" >
-   <property name="geometry" >
-    <rect>
-     <x>30</x>
-     <y>240</y>
-     <width>341</width>
-     <height>32</height>
-    </rect>
-   </property>
-   <property name="orientation" >
-    <enum>Qt::Horizontal</enum>
-   </property>
-   <property name="standardButtons" >
-    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-   </property>
-  </widget>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Select POI Category:</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QComboBox" name="comboBox_category">
+     <item>
+      <property name="text">
+       <string>restaurant</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>cafe</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>hospital</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>school</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>bank</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>atm</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>pharmacy</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>gas station</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>supermarket</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>mall</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>bus station</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>train station</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>hotel</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButton_selectArea">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>30</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Select area on map</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_selectedArea">
+     <property name="styleSheet">
+      <string notr="true">color: #666666</string>
+     </property>
+     <property name="text">
+      <string>Selected area: Not selected</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButton_download">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Download POIs</string>
+     </property>
+     <property name="checkable">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QProgressBar" name="progressBar">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="value">
+      <number>0</number>
+     </property>
+     <property name="textVisible">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_status">
+     <property name="text">
+      <string>Status: Ready</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="button_box">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections>
@@ -37,13 +186,13 @@
    <receiver>OsmPoiDownloaderDialogBase</receiver>
    <slot>accept()</slot>
    <hints>
-    <hint type="source_label" >
-     <x>248</x>
-     <y>254</y>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
     </hint>
-    <hint type="destination_label" >
-     <x>157</x>
-     <y>274</y>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
     </hint>
    </hints>
   </connection>
@@ -53,13 +202,13 @@
    <receiver>OsmPoiDownloaderDialogBase</receiver>
    <slot>reject()</slot>
    <hints>
-    <hint type="source_label" >
-     <x>316</x>
-     <y>260</y>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
     </hint>
-    <hint type="destination_label" >
-     <x>286</x>
-     <y>274</y>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
     </hint>
    </hints>
   </connection>
