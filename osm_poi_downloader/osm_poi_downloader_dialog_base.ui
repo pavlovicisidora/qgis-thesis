@@ -190,6 +190,22 @@
      </property>
     </widget>
    </item>
+   <item>
+    <widget class="QPushButton" name="pushButton_export">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>30</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Export to GeoJSON</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources/>

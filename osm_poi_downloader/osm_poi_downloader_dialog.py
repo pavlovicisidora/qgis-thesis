@@ -5,7 +5,8 @@ from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsProject
 from qgis.PyQt.QtWidgets import QMessageBox
-from qgis.PyQt.QtCore import QThread, pyqtSignal
+from qgis.PyQt.QtWidgets import QFileDialog
+from .exporter import LayerExporter
 from .poi_layer_creator import PoiLayerCreator
 from .map_tool_select_area import MapToolSelectArea
 from .overpass_api import OverpassAPI
@@ -33,6 +34,9 @@ class OsmPoiDownloaderDialog(QtWidgets.QDialog, FORM_CLASS):
         
         self.pushButton_selectArea.clicked.connect(self.select_area)
         self.pushButton_download.clicked.connect(self.download_pois)
+        self.current_layer = None
+
+        self.pushButton_export.clicked.connect(self.export_layer)
         
     def select_area(self):
         """Let user select a bounding box on the map."""
@@ -82,6 +86,7 @@ class OsmPoiDownloaderDialog(QtWidgets.QDialog, FORM_CLASS):
         self.progressBar.setVisible(True)
         self.progressBar.setValue(10)
         self.pushButton_download.setEnabled(False)
+        self.pushButton_export.setEnabled(False)
         
         try:
             # Query Overpass API
@@ -106,6 +111,9 @@ class OsmPoiDownloaderDialog(QtWidgets.QDialog, FORM_CLASS):
             
             if layer:
                 PoiLayerCreator.add_layer_to_project(layer)
+                self.current_layer = layer
+
+                self.pushButton_export.setEnabled(True)
                 self.progressBar.setValue(100)
                 
                 self.label_status.setText(f"Status: Downloaded {len(features)} {category} POIs")
@@ -133,3 +141,42 @@ class OsmPoiDownloaderDialog(QtWidgets.QDialog, FORM_CLASS):
         self.progressBar.setVisible(False)
         self.progressBar.setValue(0)
         self.pushButton_download.setEnabled(True)
+        
+    def export_layer(self):
+        """Export the current layer to GeoJSON."""
+        if not self.current_layer:
+            QMessageBox.warning(self, "No Layer", "No layer to export. Download POIs first.")
+            return
+        
+        filepath, _ = QFileDialog.getSaveFileName(
+            self,
+            "Save GeoJSON File",
+            "",
+            "GeoJSON Files (*.geojson);;All Files (*)"
+        )
+        
+        if not filepath:
+            return
+        
+        self.label_status.setText("Status: Exporting to GeoJSON...")
+        self.pushButton_export.setEnabled(False)
+        
+        success, error_msg = LayerExporter.export_to_geojson(self.current_layer, filepath)
+        
+        if success:
+            feature_count = LayerExporter.get_feature_count(self.current_layer)
+            QMessageBox.information(
+                self,
+                "Export Successful",
+                f"Exported {feature_count} features to:\n{filepath}"
+            )
+            self.label_status.setText(f"Status: Exported to {os.path.basename(filepath)}")
+        else:
+            QMessageBox.critical(
+                self,
+                "Export Failed",
+                f"Could not export layer:\n{error_msg}"
+            )
+            self.label_status.setText("Status: Export failed")
+        
+        self.pushButton_export.setEnabled(True)

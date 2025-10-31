@@ -73,6 +73,11 @@ class Ui_OsmPoiDownloaderDialogBase(object):
         self.label_status.setMaximumSize(QtCore.QSize(16777215, 50))
         self.label_status.setObjectName("label_status")
         self.verticalLayout.addWidget(self.label_status)
+        self.pushButton_export = QtWidgets.QPushButton(OsmPoiDownloaderDialogBase)
+        self.pushButton_export.setEnabled(False)
+        self.pushButton_export.setMinimumSize(QtCore.QSize(0, 30))
+        self.pushButton_export.setObjectName("pushButton_export")
+        self.verticalLayout.addWidget(self.pushButton_export)
 
         self.retranslateUi(OsmPoiDownloaderDialogBase)
         QtCore.QMetaObject.connectSlotsByName(OsmPoiDownloaderDialogBase)
@@ -98,3 +103,4 @@ class Ui_OsmPoiDownloaderDialogBase(object):
         self.label_selectedArea.setText(_translate("OsmPoiDownloaderDialogBase", "Selected area: Not selected"))
         self.pushButton_download.setText(_translate("OsmPoiDownloaderDialogBase", "Download POIs"))
         self.label_status.setText(_translate("OsmPoiDownloaderDialogBase", "Status: Ready"))
+        self.pushButton_export.setText(_translate("OsmPoiDownloaderDialogBase", "Export to GeoJSON"))
