@@ -18,6 +18,8 @@ class Ui_OsmPoiDownloaderDialogBase(object):
         self.verticalLayout = QtWidgets.QVBoxLayout(OsmPoiDownloaderDialogBase)
         self.verticalLayout.setObjectName("verticalLayout")
         self.label = QtWidgets.QLabel(OsmPoiDownloaderDialogBase)
+        self.label.setMaximumSize(QtCore.QSize(16777215, 25))
+        self.label.setBaseSize(QtCore.QSize(0, 0))
         font = QtGui.QFont()
         font.setPointSize(10)
         font.setBold(True)
@@ -46,6 +48,7 @@ class Ui_OsmPoiDownloaderDialogBase(object):
         self.pushButton_selectArea.setObjectName("pushButton_selectArea")
         self.verticalLayout.addWidget(self.pushButton_selectArea)
         self.label_selectedArea = QtWidgets.QLabel(OsmPoiDownloaderDialogBase)
+        self.label_selectedArea.setMaximumSize(QtCore.QSize(16777215, 40))
         self.label_selectedArea.setStyleSheet("color: #666666")
         self.label_selectedArea.setObjectName("label_selectedArea")
         self.verticalLayout.addWidget(self.label_selectedArea)
@@ -67,17 +70,11 @@ class Ui_OsmPoiDownloaderDialogBase(object):
         self.progressBar.setObjectName("progressBar")
         self.verticalLayout.addWidget(self.progressBar)
         self.label_status = QtWidgets.QLabel(OsmPoiDownloaderDialogBase)
+        self.label_status.setMaximumSize(QtCore.QSize(16777215, 50))
         self.label_status.setObjectName("label_status")
         self.verticalLayout.addWidget(self.label_status)
-        self.button_box = QtWidgets.QDialogButtonBox(OsmPoiDownloaderDialogBase)
-        self.button_box.setOrientation(QtCore.Qt.Horizontal)
-        self.button_box.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
-        self.button_box.setObjectName("button_box")
-        self.verticalLayout.addWidget(self.button_box)
 
         self.retranslateUi(OsmPoiDownloaderDialogBase)
-        self.button_box.accepted.connect(OsmPoiDownloaderDialogBase.accept) # type: ignore
-        self.button_box.rejected.connect(OsmPoiDownloaderDialogBase.reject) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(OsmPoiDownloaderDialogBase)
 
     def retranslateUi(self, OsmPoiDownloaderDialogBase):
