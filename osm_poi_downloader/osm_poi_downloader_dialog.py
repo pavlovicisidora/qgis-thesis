@@ -10,6 +10,7 @@ from .exporter import LayerExporter
 from .poi_layer_creator import PoiLayerCreator
 from .map_tool_select_area import MapToolSelectArea
 from .overpass_api import OverpassAPI
+from .statistics_calculator import StatisticsCalculator
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'osm_poi_downloader_dialog_base.ui'))
@@ -30,6 +31,7 @@ class OsmPoiDownloaderDialog(QtWidgets.QDialog, FORM_CLASS):
         
         self.progressBar.setVisible(False)
         self.pushButton_download.setEnabled(False)
+        self.groupBox_stats.setVisible(False)
         self.label_status.setText("Status: Ready")
         
         self.pushButton_selectArea.clicked.connect(self.select_area)
@@ -87,6 +89,7 @@ class OsmPoiDownloaderDialog(QtWidgets.QDialog, FORM_CLASS):
         self.progressBar.setValue(10)
         self.pushButton_download.setEnabled(False)
         self.pushButton_export.setEnabled(False)
+        self.groupBox_stats.setVisible(False)
         
         try:
             # Query Overpass API
@@ -111,10 +114,10 @@ class OsmPoiDownloaderDialog(QtWidgets.QDialog, FORM_CLASS):
             
             if layer:
                 PoiLayerCreator.add_layer_to_project(layer)
+                self.progressBar.setValue(100)
                 self.current_layer = layer
 
                 self.pushButton_export.setEnabled(True)
-                self.progressBar.setValue(100)
                 
                 self.label_status.setText(f"Status: Downloaded {len(features)} {category} POIs")
                 QMessageBox.information(
@@ -122,6 +125,21 @@ class OsmPoiDownloaderDialog(QtWidgets.QDialog, FORM_CLASS):
                     "Success",
                     f"Downloaded {len(features)} {category} POIs.\nLayer added to map."
                 )
+                try:
+                    stats_text = StatisticsCalculator.format_statistics(
+                        len(features),
+                        self.bbox,
+                        category
+                    )
+                    print(f"Statistics calculated:\n{stats_text}") 
+                    self.label_statistics.setText(stats_text)
+                    self.groupBox_stats.setVisible(True)
+                except Exception as e:
+                    print(f"ERROR calculating statistics: {e}")
+                    import traceback
+                    traceback.print_exc()
+                    self.label_statistics.setText(f"POIs Found: {len(features)} {category}(s)\n\n(Detailed statistics unavailable)")
+                    self.groupBox_stats.setVisible(True)
             else:
                 raise Exception("Failed to create layer")
             
@@ -141,7 +159,7 @@ class OsmPoiDownloaderDialog(QtWidgets.QDialog, FORM_CLASS):
         self.progressBar.setVisible(False)
         self.progressBar.setValue(0)
         self.pushButton_download.setEnabled(True)
-        
+
     def export_layer(self):
         """Export the current layer to selected format."""
         if not self.current_layer:
