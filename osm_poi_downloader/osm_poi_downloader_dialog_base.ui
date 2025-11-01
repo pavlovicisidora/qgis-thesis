@@ -6,109 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>424</height>
+    <width>473</width>
+    <height>664</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>OSM POI Downloader</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <widget class="QLabel" name="label">
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>25</height>
-      </size>
-     </property>
-     <property name="baseSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>10</pointsize>
-       <weight>75</weight>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>Select POI Category:</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QComboBox" name="comboBox_category">
-     <item>
-      <property name="text">
-       <string>restaurant</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>cafe</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>hospital</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>school</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>bank</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>atm</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>pharmacy</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>gas station</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>supermarket</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>mall</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>bus station</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>train station</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>hotel</string>
-      </property>
-     </item>
-    </widget>
-   </item>
    <item>
     <widget class="QPushButton" name="pushButton_selectArea">
      <property name="minimumSize">
@@ -136,6 +41,163 @@
      <property name="text">
       <string>Selected area: Not selected</string>
      </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_categories">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>290</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>290</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>Select POI Categories (check one or more):</string>
+     </property>
+     <widget class="QWidget" name="horizontalLayoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>421</width>
+        <height>281</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <property name="spacing">
+        <number>10</number>
+       </property>
+       <property name="leftMargin">
+        <number>5</number>
+       </property>
+       <property name="topMargin">
+        <number>5</number>
+       </property>
+       <property name="rightMargin">
+        <number>5</number>
+       </property>
+       <property name="bottomMargin">
+        <number>5</number>
+       </property>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <property name="spacing">
+          <number>5</number>
+         </property>
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMaximumSize</enum>
+         </property>
+         <item>
+          <widget class="QCheckBox" name="checkBox_restaurant">
+           <property name="text">
+            <string>Restaurant</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_cafe">
+           <property name="text">
+            <string>Cafe</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_hospital">
+           <property name="text">
+            <string>Hospital</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_bank">
+           <property name="text">
+            <string>Bank</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_atm">
+           <property name="text">
+            <string>ATM</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_gasStation">
+           <property name="text">
+            <string>Gas Station</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_busStation">
+           <property name="text">
+            <string>Bus Station</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <property name="spacing">
+          <number>5</number>
+         </property>
+         <property name="sizeConstraint">
+          <enum>QLayout::SetMaximumSize</enum>
+         </property>
+         <item>
+          <widget class="QCheckBox" name="checkBox_trainStation">
+           <property name="text">
+            <string>Train Station</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_supermarket">
+           <property name="text">
+            <string>Supermarket</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_mall">
+           <property name="text">
+            <string>Mall</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_pharmacy">
+           <property name="text">
+            <string>Pharmacy</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_school">
+           <property name="text">
+            <string>School</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBox_hotel">
+           <property name="text">
+            <string>Hotel</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>
@@ -182,11 +244,14 @@
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>50</height>
+       <height>40</height>
       </size>
      </property>
      <property name="text">
       <string>Status: Ready</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -204,7 +269,13 @@
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>180</height>
+       <height>220</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>300</height>
       </size>
      </property>
      <property name="title">
