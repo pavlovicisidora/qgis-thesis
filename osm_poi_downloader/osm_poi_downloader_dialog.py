@@ -5,10 +5,12 @@ from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsProject
 from qgis.PyQt.QtWidgets import QMessageBox
-from qgis.PyQt.QtCore import QThread, pyqtSignal
+from qgis.PyQt.QtWidgets import QFileDialog
+from .exporter import LayerExporter
 from .poi_layer_creator import PoiLayerCreator
 from .map_tool_select_area import MapToolSelectArea
 from .overpass_api import OverpassAPI
+from .statistics_calculator import StatisticsCalculator
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'osm_poi_downloader_dialog_base.ui'))
@@ -29,10 +31,14 @@ class OsmPoiDownloaderDialog(QtWidgets.QDialog, FORM_CLASS):
         
         self.progressBar.setVisible(False)
         self.pushButton_download.setEnabled(False)
+        self.groupBox_stats.setVisible(False)
         self.label_status.setText("Status: Ready")
         
         self.pushButton_selectArea.clicked.connect(self.select_area)
         self.pushButton_download.clicked.connect(self.download_pois)
+        self.current_layer = None
+
+        self.pushButton_export.clicked.connect(self.export_layer)
         
     def select_area(self):
         """Let user select a bounding box on the map."""
@@ -82,6 +88,8 @@ class OsmPoiDownloaderDialog(QtWidgets.QDialog, FORM_CLASS):
         self.progressBar.setVisible(True)
         self.progressBar.setValue(10)
         self.pushButton_download.setEnabled(False)
+        self.pushButton_export.setEnabled(False)
+        self.groupBox_stats.setVisible(False)
         
         try:
             # Query Overpass API
@@ -107,6 +115,9 @@ class OsmPoiDownloaderDialog(QtWidgets.QDialog, FORM_CLASS):
             if layer:
                 PoiLayerCreator.add_layer_to_project(layer)
                 self.progressBar.setValue(100)
+                self.current_layer = layer
+
+                self.pushButton_export.setEnabled(True)
                 
                 self.label_status.setText(f"Status: Downloaded {len(features)} {category} POIs")
                 QMessageBox.information(
@@ -114,6 +125,21 @@ class OsmPoiDownloaderDialog(QtWidgets.QDialog, FORM_CLASS):
                     "Success",
                     f"Downloaded {len(features)} {category} POIs.\nLayer added to map."
                 )
+                try:
+                    stats_text = StatisticsCalculator.format_statistics(
+                        len(features),
+                        self.bbox,
+                        category
+                    )
+                    print(f"Statistics calculated:\n{stats_text}") 
+                    self.label_statistics.setText(stats_text)
+                    self.groupBox_stats.setVisible(True)
+                except Exception as e:
+                    print(f"ERROR calculating statistics: {e}")
+                    import traceback
+                    traceback.print_exc()
+                    self.label_statistics.setText(f"POIs Found: {len(features)} {category}(s)\n\n(Detailed statistics unavailable)")
+                    self.groupBox_stats.setVisible(True)
             else:
                 raise Exception("Failed to create layer")
             
@@ -133,3 +159,61 @@ class OsmPoiDownloaderDialog(QtWidgets.QDialog, FORM_CLASS):
         self.progressBar.setVisible(False)
         self.progressBar.setValue(0)
         self.pushButton_download.setEnabled(True)
+
+    def export_layer(self):
+        """Export the current layer to selected format."""
+        if not self.current_layer:
+            QMessageBox.warning(self, "No Layer", "No layer to export. Download POIs first.")
+            return
+        
+        export_format = self.comboBox_exportFormat.currentText()
+        
+        if export_format == "GeoJSON":
+            filter_str = "GeoJSON Files (*.geojson);;All Files (*)"
+            default_ext = ".geojson"
+        elif export_format == "CSV":
+            filter_str = "CSV Files (*.csv);;All Files (*)"
+            default_ext = ".csv"
+        else:
+            QMessageBox.warning(self, "Invalid Format", "Please select a valid export format.")
+            return
+        
+        # Open file dialog
+        filepath, _ = QFileDialog.getSaveFileName(
+            self,
+            f"Save {export_format} File",
+            "",
+            filter_str
+        )
+        
+        if not filepath:
+            return
+        
+        if not filepath.lower().endswith(default_ext):
+            filepath += default_ext
+        
+        self.label_status.setText(f"Status: Exporting to {export_format}...")
+        self.pushButton_export.setEnabled(False)
+        
+        if export_format == "GeoJSON":
+            success, error_msg = LayerExporter.export_to_geojson(self.current_layer, filepath)
+        else: 
+            success, error_msg = LayerExporter.export_to_csv(self.current_layer, filepath)
+        
+        if success:
+            feature_count = LayerExporter.get_feature_count(self.current_layer)
+            QMessageBox.information(
+                self,
+                "Export Successful",
+                f"Exported {feature_count} features to {export_format}:\n{filepath}"
+            )
+            self.label_status.setText(f"Status: Exported to {os.path.basename(filepath)}")
+        else:
+            QMessageBox.critical(
+                self,
+                "Export Failed",
+                f"Could not export layer:\n{error_msg}"
+            )
+            self.label_status.setText("Status: Export failed")
+        
+        self.pushButton_export.setEnabled(True)
