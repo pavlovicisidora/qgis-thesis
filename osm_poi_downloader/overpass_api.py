@@ -12,7 +12,7 @@ class OverpassAPI:
     
     OVERPASS_URL = "https://overpass-api.de/api/interpreter"
     
-    TIMEOUT = 1000
+    TIMEOUT = 100000
     
     CATEGORY_MAPPING = {
         'restaurant': ('amenity', 'restaurant'),
