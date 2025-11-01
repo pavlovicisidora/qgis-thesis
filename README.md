@@ -108,13 +108,13 @@ This plugin allows users to quickly download POI data from OpenStreetMap by draw
 ## Screenshots
 
 ### Main Interface
-![Plugin Dialog](docs/screenshots/main_interface.png)
+![Plugin Dialog](docs/screenshots/main_interface.PNG)
 
 ### Results with Statistics
-![Results Display](docs/screenshots/results_statistics.png)
+![Results Display](docs/screenshots/results_statistics.PNG)
 
 ### Multiple Layers
-![Multiple Categories](docs/screenshots/multiple_layers.png)
+![Multiple Categories](docs/screenshots/multiple_layers.PNG)
 
 ## Technical Details
 
