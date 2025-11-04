@@ -11,7 +11,7 @@ from qgis.core import (
     QgsProject,
     QgsMarkerSymbol
 )
-from qgis.PyQt.QtCore import QVariant, QMetaType
+from qgis.PyQt.QtCore import QMetaType
 
 
 class PoiLayerCreator:
@@ -19,26 +19,42 @@ class PoiLayerCreator:
     Creates QGIS vector layers from POI data.
     """
     
-    CATEGORY_COLORS = {
-        'restaurant': '#e74c3c',
-        'cafe': '#f39c12',
-        'hospital': '#3498db',
-        'school': '#9b59b6',
-        'bank': '#2ecc71',
-        'atm': '#1abc9c',
-        'pharmacy': '#e67e22',
-        'gas station': '#34495e',
-        'supermarket': '#27ae60',
-        'mall': '#8e44ad',
-        'bus station': '#c0392b',
-        'train station': '#2c3e50',
-        'hotel': '#16a085',
+    RISK_ZONE_COLORS = {
+        'factory': "#e83971",      
+        'gas station': "#e17911",  
+        'power plant': '#e64a19',       
+        'power substation': "#cd6b21",
+        'railway station': "#ede77a",   
+        'railway halt': "#f0ce24",     
+        'waterworks': '#c62828',      
+        'wastewater plant': "#9c0202", 
+        'industrial zone': "#de4b48",  
     }
+
+    VULNERABLE_POPULATION_COLORS = {
+        'school': "#38bfec", 
+        'kindergarten': "#7677b4",  
+        'hospital': '#0d47a1', 
+        'clinic': '#1e88e5',
+        'nursing home': '#2e7d32',     
+        'social facility': "#6be571",
+        'childcare': "#8a4a9d",
+        'community centre': "#66d12d", 
+    }
+    
+    CATEGORY_COLORS = {**RISK_ZONE_COLORS, **VULNERABLE_POPULATION_COLORS}
     
     @staticmethod
     def create_layer(features, layer_name, poi_type):
         """
         Create a QGIS point layer from POI features.
+        Args:
+            features: List of feature dictionaries from OverpassAPI.parse_features()
+            layer_name: String, name for the layer
+            poi_type: String, POI category for styling
+        
+        Returns:
+            QgsVectorLayer instance, or None on error
         """
         if not features:
             print("ERROR: No features to create layer from")
@@ -117,15 +133,26 @@ class PoiLayerCreator:
     def style_layer(layer, poi_type):
         """
         Apply styling to the POI layer.
+        
+        Args:
+            layer: QgsVectorLayer to style
+            poi_type: String, POI category
         """
         color = PoiLayerCreator.CATEGORY_COLORS.get(poi_type.lower(), '#95a5a6')
+        
+        if poi_type.lower() in PoiLayerCreator.RISK_ZONE_COLORS:
+            size = '4'
+            outline_width = '1.0'
+        else:
+            size = '3'
+            outline_width = '0.8'
         
         symbol = QgsMarkerSymbol.createSimple({
             'name': 'circle',
             'color': color,
-            'size': '4',
+            'size': size,
             'outline_color': 'black',
-            'outline_width': '0.8'
+            'outline_width': outline_width
         })
         
         layer.renderer().setSymbol(symbol)
@@ -135,6 +162,12 @@ class PoiLayerCreator:
     def add_layer_to_project(layer):
         """
         Add the layer to the current QGIS project.
+        
+        Args:
+            layer: QgsVectorLayer to add
+        
+        Returns:
+            Boolean, True if successful
         """
         if not layer:
             print("ERROR: No layer to add")

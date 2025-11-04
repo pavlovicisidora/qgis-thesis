@@ -49,22 +49,31 @@ class OsmPoiDownloaderDialog(QtWidgets.QDialog, FORM_CLASS):
         """
         categories = []
         
-        checkbox_mapping = {
-            self.checkBox_restaurant: 'restaurant',
-            self.checkBox_cafe: 'cafe',
-            self.checkBox_hospital: 'hospital',
-            self.checkBox_school: 'school',
-            self.checkBox_bank: 'bank',
-            self.checkBox_atm: 'atm',
-            self.checkBox_pharmacy: 'pharmacy',
+        risk_zone_mapping = {
+            self.checkBox_factory: 'factory',
             self.checkBox_gasStation: 'gas station',
-            self.checkBox_supermarket: 'supermarket',
-            self.checkBox_mall: 'mall',
-            self.checkBox_busStation: 'bus station',
-            self.checkBox_trainStation: 'train station',
-            self.checkBox_hotel: 'hotel',
+            self.checkBox_powerPlant: 'power plant',
+            self.checkBox_powerSubstation: 'power substation',
+            self.checkBox_railwayStation: 'railway station',
+            self.checkBox_railwayHalt: 'railway halt',
+            self.checkBox_waterworks: 'waterworks',
+            self.checkBox_wastewaterPlant: 'wastewater plant',
+            self.checkBox_industrialZone: 'industrial zone',
         }
         
+        vulnerable_pop_mapping = {
+            self.checkBox_school: 'school',
+            self.checkBox_kindergarten: 'kindergarten',
+            self.checkBox_hospital: 'hospital',
+            self.checkBox_clinic: 'clinic',
+            self.checkBox_nursingHome: 'nursing home',
+            self.checkBox_socialFacility: 'social facility',
+            self.checkBox_childcare: 'childcare',
+            self.checkBox_communityCentre: 'community centre',
+        }
+        
+        checkbox_mapping = {**risk_zone_mapping, **vulnerable_pop_mapping}
+
         for checkbox, category in checkbox_mapping.items():
             if checkbox.isChecked():
                 categories.append(category)

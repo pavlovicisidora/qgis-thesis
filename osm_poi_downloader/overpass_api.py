@@ -12,23 +12,32 @@ class OverpassAPI:
     
     OVERPASS_URL = "https://overpass-api.de/api/interpreter"
     
-    TIMEOUT = 100000
+    TIMEOUT = 1000000
     
-    CATEGORY_MAPPING = {
-        'restaurant': ('amenity', 'restaurant'),
-        'cafe': ('amenity', 'cafe'),
-        'hospital': ('amenity', 'hospital'),
-        'school': ('amenity', 'school'),
-        'bank': ('amenity', 'bank'),
-        'atm': ('amenity', 'atm'),
-        'pharmacy': ('amenity', 'pharmacy'),
+    RISK_ZONES = {
+        'factory': ('man_made', 'works'),
         'gas station': ('amenity', 'fuel'),
-        'supermarket': ('shop', 'supermarket'),
-        'mall': ('shop', 'mall'),
-        'bus station': ('amenity', 'bus_station'),
-        'train station': ('railway', 'station'),
-        'hotel': ('tourism', 'hotel'),
+        'power plant': ('power', 'plant'),
+        'power substation': ('power', 'substation'),
+        'railway station': ('railway', 'station'),
+        'railway halt': ('railway', 'halt'),
+        'waterworks': ('man_made', 'water_works'),
+        'wastewater plant': ('man_made', 'wastewater_plant'),
+        'industrial zone': ('landuse', 'industrial'),
     }
+
+    VULNERABLE_POPULATIONS = {
+        'school': ('amenity', 'school'),
+        'kindergarten': ('amenity', 'kindergarten'),
+        'hospital': ('amenity', 'hospital'),
+        'clinic': ('amenity', 'clinic'),
+        'nursing home': ('amenity', 'nursing_home'),
+        'social facility': ('amenity', 'social_facility'),
+        'childcare': ('amenity', 'childcare'),
+        'community centre': ('amenity', 'community_centre'),
+    }
+    
+    CATEGORY_MAPPING = {**RISK_ZONES, **VULNERABLE_POPULATIONS}
     
     @staticmethod
     def build_query(bbox, poi_type):
@@ -37,7 +46,7 @@ class OverpassAPI:
         
         Args:
             bbox: Tuple of (south, west, north, east) in WGS84 coordinates
-            poi_type: String, the POI category (e.g., 'restaurant', 'hospital')
+            poi_type: String, the POI category  
         
         Returns:
             String containing the Overpass QL query
@@ -114,13 +123,7 @@ class OverpassAPI:
             api_response: Dictionary from Overpass API
         
         Returns:
-            List of dictionaries, each containing:
-                - 'lat': Latitude
-                - 'lon': Longitude
-                - 'name': POI name (or 'Unnamed' if not available)
-                - 'type': POI type/category
-                - 'id': OSM ID
-                - 'tags': Dictionary of all OSM tags
+            List of dictionaries with POI data
         """
         features = []
         
@@ -153,7 +156,11 @@ class OverpassAPI:
             poi_type = (tags.get('amenity') or 
                        tags.get('shop') or 
                        tags.get('tourism') or 
-                       tags.get('railway') or 
+                       tags.get('railway') or
+                       tags.get('man_made') or
+                       tags.get('power') or
+                       tags.get('landuse') or
+                       tags.get('healthcare') or
                        'unknown')
             
             osm_id = element.get('id', 0)

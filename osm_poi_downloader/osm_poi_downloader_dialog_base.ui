@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>473</width>
-    <height>664</height>
+    <height>750</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -48,13 +48,13 @@
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>290</height>
+       <height>310</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>290</height>
+       <height>310</height>
       </size>
      </property>
      <property name="title">
@@ -65,8 +65,8 @@
        <rect>
         <x>10</x>
         <y>20</y>
-        <width>421</width>
-        <height>281</height>
+        <width>441</width>
+        <height>286</height>
        </rect>
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -86,115 +86,141 @@
         <number>5</number>
        </property>
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_2">
-         <property name="spacing">
-          <number>5</number>
+        <widget class="QGroupBox" name="groupBox_riskZones">
+         <property name="title">
+          <string>Risk Zones</string>
          </property>
-         <property name="sizeConstraint">
-          <enum>QLayout::SetMaximumSize</enum>
-         </property>
-         <item>
-          <widget class="QCheckBox" name="checkBox_restaurant">
-           <property name="text">
-            <string>Restaurant</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_cafe">
-           <property name="text">
-            <string>Cafe</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_hospital">
-           <property name="text">
-            <string>Hospital</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_bank">
-           <property name="text">
-            <string>Bank</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_atm">
-           <property name="text">
-            <string>ATM</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_gasStation">
-           <property name="text">
-            <string>Gas Station</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_busStation">
-           <property name="text">
-            <string>Bus Station</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QCheckBox" name="checkBox_factory">
+            <property name="text">
+             <string>Factory</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBox_gasStation">
+            <property name="text">
+             <string>Gas Station</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBox_powerPlant">
+            <property name="text">
+             <string>Power Plant</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBox_powerSubstation">
+            <property name="text">
+             <string>Power Substation</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBox_railwayStation">
+            <property name="text">
+             <string>Railway Station</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBox_railwayHalt">
+            <property name="text">
+             <string>Railway Halt</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBox_waterworks">
+            <property name="text">
+             <string>Waterworks</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBox_wastewaterPlant">
+            <property name="text">
+             <string>Wastewater Plant</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBox_industrialZone">
+            <property name="text">
+             <string>Industrial Zone</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </item>
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_3">
-         <property name="spacing">
-          <number>5</number>
+        <widget class="QGroupBox" name="groupBox_vulnerablePopulations">
+         <property name="title">
+          <string>Vulnerable Populations</string>
          </property>
-         <property name="sizeConstraint">
-          <enum>QLayout::SetMaximumSize</enum>
-         </property>
-         <item>
-          <widget class="QCheckBox" name="checkBox_trainStation">
-           <property name="text">
-            <string>Train Station</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_supermarket">
-           <property name="text">
-            <string>Supermarket</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_mall">
-           <property name="text">
-            <string>Mall</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_pharmacy">
-           <property name="text">
-            <string>Pharmacy</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_school">
-           <property name="text">
-            <string>School</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="checkBox_hotel">
-           <property name="text">
-            <string>Hotel</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QCheckBox" name="checkBox_school">
+            <property name="text">
+             <string>School</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBox_kindergarten">
+            <property name="text">
+             <string>Kindergarten</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBox_hospital">
+            <property name="text">
+             <string>Hospital</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBox_clinic">
+            <property name="text">
+             <string>Clinic</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBox_nursingHome">
+            <property name="text">
+             <string>Nursing Home</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBox_socialFacility">
+            <property name="text">
+             <string>Social Facility</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBox_childcare">
+            <property name="text">
+             <string>Childcare</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBox_communityCentre">
+            <property name="text">
+             <string>Community Centre</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </item>
       </layout>
      </widget>
