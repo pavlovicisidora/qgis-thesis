@@ -12,6 +12,9 @@ from qgis.core import (
     QgsMarkerSymbol
 )
 from qgis.PyQt.QtCore import QMetaType
+from qgis.core import QgsPalLayerSettings, QgsTextFormat, QgsVectorLayerSimpleLabeling, QgsTextBufferSettings
+from qgis.PyQt.QtGui import QColor, QFont
+import math
 
 
 class PoiLayerCreator:
@@ -156,6 +159,67 @@ class PoiLayerCreator:
         })
         
         layer.renderer().setSymbol(symbol)
+        
+        feature_count = layer.featureCount()
+        if feature_count > 0:
+            extent = layer.extent()
+            
+            south = extent.yMinimum()
+            north = extent.yMaximum()
+            west = extent.xMinimum()
+            east = extent.xMaximum()
+            
+            mid_lat = (south + north) / 2
+            lat_to_km = 111.32
+            lon_to_km = 111.32 * math.cos(math.radians(mid_lat))
+            
+            height_km = (north - south) * lat_to_km
+            width_km = (east - west) * lon_to_km
+            area_km2 = height_km * width_km
+            
+            MIN_AREA_THRESHOLD = 0.01 
+            
+            if area_km2 < MIN_AREA_THRESHOLD:
+                density = 0.0 
+                print(f"Layer {layer.name()}: {feature_count} features in very small area ({area_km2:.6f} km²) - treating as sparse")
+            else:
+                density = feature_count / area_km2
+                print(f"Layer {layer.name()}: {feature_count} features in {area_km2:.3f} km² = {density:.2f} POIs/km²")
+            
+            DENSITY_THRESHOLD = 10.0
+            
+            if density < DENSITY_THRESHOLD:
+                pal_settings = QgsPalLayerSettings()
+                pal_settings.fieldName = 'name'
+                pal_settings.enabled = True
+                
+                text_format = QgsTextFormat()
+                text_format.setFont(QFont('Arial', 9))
+                text_format.setSize(9)
+                text_format.setColor(QColor(0, 0, 0))
+                
+                buffer_settings = QgsTextBufferSettings()
+                buffer_settings.setEnabled(True)
+                buffer_settings.setSize(1)
+                buffer_settings.setColor(QColor(255, 255, 255)) 
+                text_format.setBuffer(buffer_settings)
+                
+                pal_settings.setFormat(text_format)
+                
+                pal_settings.placement = QgsPalLayerSettings.OrderedPositionsAroundPoint
+                pal_settings.dist = 2 
+                
+                labeling = QgsVectorLayerSimpleLabeling(pal_settings)
+                layer.setLabeling(labeling)
+                layer.setLabelsEnabled(True)
+                
+                print(f"Labels ENABLED for {layer.name()} (density: {density:.2f} < {DENSITY_THRESHOLD})")
+            else:
+                layer.setLabelsEnabled(False)
+                print(f"Labels DISABLED for {layer.name()} (density: {density:.2f} ≥ {DENSITY_THRESHOLD})")
+        else:
+            layer.setLabelsEnabled(False)
+            
         layer.triggerRepaint()
     
     @staticmethod
