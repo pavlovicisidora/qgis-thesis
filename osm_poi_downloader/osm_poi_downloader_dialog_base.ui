@@ -6,14 +6,29 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>473</width>
-    <height>750</height>
+    <width>482</width>
+    <height>742</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>OSM POI Downloader</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <property name="leftMargin">
+    <number>10</number>
+   </property>
+   <property name="topMargin">
+    <number>10</number>
+   </property>
+   <property name="rightMargin">
+    <number>10</number>
+   </property>
+   <property name="bottomMargin">
+    <number>10</number>
+   </property>
    <item>
     <widget class="QPushButton" name="pushButton_selectArea">
      <property name="minimumSize">
@@ -29,10 +44,22 @@
    </item>
    <item>
     <widget class="QLabel" name="label_selectedArea">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>20</height>
+      </size>
+     </property>
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>40</height>
+       <height>20</height>
       </size>
      </property>
      <property name="styleSheet">
@@ -267,10 +294,16 @@
    </item>
    <item>
     <widget class="QLabel" name="label_status">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>20</height>
+      </size>
+     </property>
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>40</height>
+       <height>25</height>
       </size>
      </property>
      <property name="text">
@@ -356,6 +389,9 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="spacing">
+      <number>2</number>
+     </property>
      <item>
       <widget class="QComboBox" name="comboBox_exportFormat">
        <item>
@@ -387,6 +423,22 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButton_exportMap">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>35</height>
+      </size>
+     </property>
+     <property name="toolTip">
+      <string extracomment="Export the map canvas with all visible layers and automatic legend"/>
+     </property>
+     <property name="text">
+      <string>Export Map with Legend</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
