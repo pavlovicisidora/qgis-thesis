@@ -4,13 +4,13 @@ import os
 from qgis.PyQt import uic
 from qgis.PyQt import QtWidgets
 from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsProject
-from qgis.PyQt.QtWidgets import QMessageBox
-from qgis.PyQt.QtWidgets import QFileDialog
+from qgis.PyQt.QtWidgets import QMessageBox, QFileDialog, QInputDialog
 from .exporter import LayerExporter
 from .poi_layer_creator import PoiLayerCreator
 from .map_tool_select_area import MapToolSelectArea
 from .overpass_api import OverpassAPI
 from .statistics_calculator import StatisticsCalculator
+from .map_exporter import MapExporter
 
 FORM_CLASS, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'osm_poi_downloader_dialog_base.ui'))
@@ -39,6 +39,7 @@ class OsmPoiDownloaderDialog(QtWidgets.QDialog, FORM_CLASS):
         self.current_layers = []
 
         self.pushButton_export.clicked.connect(self.export_layer)
+        self.pushButton_exportMap.clicked.connect(self.export_map_with_legend)
         
     def get_selected_categories(self):
         """
@@ -49,22 +50,31 @@ class OsmPoiDownloaderDialog(QtWidgets.QDialog, FORM_CLASS):
         """
         categories = []
         
-        checkbox_mapping = {
-            self.checkBox_restaurant: 'restaurant',
-            self.checkBox_cafe: 'cafe',
-            self.checkBox_hospital: 'hospital',
-            self.checkBox_school: 'school',
-            self.checkBox_bank: 'bank',
-            self.checkBox_atm: 'atm',
-            self.checkBox_pharmacy: 'pharmacy',
+        risk_zone_mapping = {
+            self.checkBox_factory: 'factory',
             self.checkBox_gasStation: 'gas station',
-            self.checkBox_supermarket: 'supermarket',
-            self.checkBox_mall: 'mall',
-            self.checkBox_busStation: 'bus station',
-            self.checkBox_trainStation: 'train station',
-            self.checkBox_hotel: 'hotel',
+            self.checkBox_powerPlant: 'power plant',
+            self.checkBox_powerSubstation: 'power substation',
+            self.checkBox_railwayStation: 'railway station',
+            self.checkBox_railwayHalt: 'railway halt',
+            self.checkBox_waterworks: 'waterworks',
+            self.checkBox_wastewaterPlant: 'wastewater plant',
+            self.checkBox_industrialZone: 'industrial zone',
         }
         
+        vulnerable_pop_mapping = {
+            self.checkBox_school: 'school',
+            self.checkBox_kindergarten: 'kindergarten',
+            self.checkBox_hospital: 'hospital',
+            self.checkBox_clinic: 'clinic',
+            self.checkBox_nursingHome: 'nursing home',
+            self.checkBox_socialFacility: 'social facility',
+            self.checkBox_childcare: 'childcare',
+            self.checkBox_communityCentre: 'community centre',
+        }
+        
+        checkbox_mapping = {**risk_zone_mapping, **vulnerable_pop_mapping}
+
         for checkbox, category in checkbox_mapping.items():
             if checkbox.isChecked():
                 categories.append(category)
@@ -126,8 +136,6 @@ class OsmPoiDownloaderDialog(QtWidgets.QDialog, FORM_CLASS):
         self.pushButton_export.setEnabled(False)
         self.groupBox_stats.setVisible(False)
         
-        category_list = ", ".join(selected_categories)
-        self.label_status.setText(f"Status: Downloading {category_list}...")
         self.progressBar.setVisible(True)
         self.progressBar.setValue(0)
         
@@ -135,28 +143,60 @@ class OsmPoiDownloaderDialog(QtWidgets.QDialog, FORM_CLASS):
         total_features = 0
         
         try:
-            progress_per_category = 80 // len(selected_categories)
-            current_progress = 10
+            use_batch = len(selected_categories) >= 3
             
-            for i, category in enumerate(selected_categories):
-                self.label_status.setText(f"Status: Downloading {category} ({i+1}/{len(selected_categories)})...")
-                self.progressBar.setValue(current_progress)
+            if use_batch:
+                self.label_status.setText(f"Status: Downloading all categories in batch...")
+                self.progressBar.setValue(10)
                 
-                data = OverpassAPI.query_overpass(self.bbox, category)
+                data = OverpassAPI.query_overpass_batch(self.bbox, selected_categories)
+                categorized_features = OverpassAPI.parse_batch_features(data)
                 
-                features = OverpassAPI.parse_features(data)
+                self.progressBar.setValue(60)
                 
-                if features:
-                    layer_name = f"OSM {category.title()} ({len(features)} points)"
-                    layer = PoiLayerCreator.create_layer(features, layer_name, category)
+                progress_per_layer = 30 // len(categorized_features) if categorized_features else 0
+                current_progress = 60
+                
+                for category, features in categorized_features.items():
+                    if features:
+                        layer_name = f"OSM {category.title()} ({len(features)} points)"
+                        layer = PoiLayerCreator.create_layer(features, layer_name, category)
+                        
+                        if layer:
+                            PoiLayerCreator.add_layer_to_project(layer)
+                            created_layers.append((category, layer, len(features)))
+                            total_features += len(features)
                     
-                    if layer:
-                        PoiLayerCreator.add_layer_to_project(layer)
-                        created_layers.append((category, layer, len(features)))
-                        total_features += len(features)
+                    current_progress += progress_per_layer
+                    self.progressBar.setValue(current_progress)
                 
-                current_progress += progress_per_category
-                self.progressBar.setValue(current_progress)
+            else:
+                import time
+                
+                progress_per_category = 80 // len(selected_categories)
+                current_progress = 10
+                
+                for i, category in enumerate(selected_categories):
+                    self.label_status.setText(f"Status: Downloading {category} ({i+1}/{len(selected_categories)})...")
+                    self.progressBar.setValue(current_progress)
+                    
+                    if i > 0:
+                        time.sleep(2)
+                    
+                    data = OverpassAPI.query_overpass(self.bbox, category)
+                    features = OverpassAPI.parse_features(data)
+                    
+                    if features:
+                        layer_name = f"OSM {category.title()} ({len(features)} points)"
+                        layer = PoiLayerCreator.create_layer(features, layer_name, category)
+                        
+                        if layer:
+                            PoiLayerCreator.add_layer_to_project(layer)
+                            created_layers.append((category, layer, len(features)))
+                            total_features += len(features)
+                    
+                    current_progress += progress_per_category
+                    self.progressBar.setValue(current_progress)
             
             self.progressBar.setValue(100)
             
@@ -236,7 +276,6 @@ class OsmPoiDownloaderDialog(QtWidgets.QDialog, FORM_CLASS):
 
     def _choose_and_export_layer(self, export_format):
         """Let user choose which layer to export."""
-        from qgis.PyQt.QtWidgets import QInputDialog
         
         layer_names = [f"{cat.title()} ({layer.featureCount()} features)" 
                     for cat, layer in self.current_layers]
@@ -356,5 +395,90 @@ class OsmPoiDownloaderDialog(QtWidgets.QDialog, FORM_CLASS):
             self.label_status.setText(f"Status: Exported {exported_count}/{len(self.current_layers)} layers")
         
         self.pushButton_export.setEnabled(True)
+    
+    def export_map_with_legend(self):
+        """Export the map canvas with automatic legend."""
+        visible_layers = MapExporter.get_visible_layer_count()
+        
+        if visible_layers == 0:
+            QMessageBox.warning(
+                self,
+                "No Layers",
+                "No layers to export. Download POIs first."
+            )
+            return
+        
+        formats = ["PNG", "JPEG", "PDF"]
+        format_choice, ok = QInputDialog.getItem(
+            self,
+            "Choose Export Format",
+            "Select image format:",
+            formats,
+            0,
+            False
+        )
+        
+        if not ok:
+            return
+        
+        title, ok = QInputDialog.getText(
+            self,
+            "Map Title",
+            "Enter map title:",
+            text="Risk Assessment Map"
+        )
+        
+        if not ok:
+            title = "Risk Assessment Map"
+        
+        if format_choice == "PNG":
+            filter_str = "PNG Images (*.png)"
+            default_ext = ".png"
+        elif format_choice == "JPEG":
+            filter_str = "JPEG Images (*.jpg *.jpeg)"
+            default_ext = ".jpg"
+        else:  
+            filter_str = "PDF Documents (*.pdf)"
+            default_ext = ".pdf"
+        
+        filepath, _ = QFileDialog.getSaveFileName(
+            self,
+            "Save Map",
+            "",
+            filter_str
+        )
+        
+        if not filepath:
+            return
+        
+        if not filepath.lower().endswith(default_ext):
+            filepath += default_ext
+        
+        self.label_status.setText(f"Status: Exporting map to {format_choice}...")
+        self.pushButton_exportMap.setEnabled(False)
+        
+        success, error_msg = MapExporter.export_map_with_legend(
+            self.canvas,
+            filepath,
+            title,
+            format_choice
+        )
+        
+        if success:
+            QMessageBox.information(
+                self,
+                "Export Successful",
+                f"Map exported to:\n{filepath}\n\nThe map includes all visible layers and an automatic legend."
+            )
+            self.label_status.setText(f"Status: Map exported to {os.path.basename(filepath)}")
+        else:
+            QMessageBox.critical(
+                self,
+                "Export Failed",
+                f"Could not export map:\n{error_msg}"
+            )
+            self.label_status.setText("Status: Map export failed")
+        
+        self.pushButton_exportMap.setEnabled(True)
 
         
